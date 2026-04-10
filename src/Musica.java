@@ -1,29 +1,68 @@
 public class Musica {
-    String titulo;
-    String artista;
-    int duracaoSegundos;
-    String genero;
-    void exibir() {
-        System.out.println("Titulo: " + this.titulo);
-        System.out.println("Artista: " + this.artista);
-        System.out.println("Duração: " + this.getDuracaoFormatada());
-        System.out.println("Gênero: " + this.genero + "\n");
+
+    private String titulo;
+    private String artista;
+    private int duracao;
+    private String genero;
+
+    // Construtor
+    public Musica(String titulo, String artista, int duracao, String genero) {
+        setTitulo(titulo);
+        setArtista(artista);
+        setDuracao(duracao);
+        setGenero(genero);
     }
-    String getDuracaoFormatada() {
-        int min = this.duracaoSegundos / 60;
-        int seg = this.duracaoSegundos % 60;
-        return String.format("%d:%02d", min, seg);
+
+    // Getters e Setters com validação
+    public String getTitulo() {
+        return titulo;
     }
-    boolean contemTitulo(String busca) {
-        String titulo = this.titulo.toLowerCase();
-        return titulo.contains(busca.toLowerCase());
+
+    public void setTitulo(String titulo) {
+        if (titulo == null || titulo.trim().isEmpty()) {
+            System.out.println("Título inválido!");
+        } else {
+            this.titulo = titulo;
+        }
     }
-    boolean contemArtista(String busca) {
-        String artista = this.artista.toLowerCase();
-        return artista.contains(busca.toLowerCase());
+
+    public String getArtista() {
+        return artista;
     }
-    boolean contemGenero(String busca) {
-        String genero = this.genero.toLowerCase();
-        return genero.contains(busca.toLowerCase());
+
+    public void setArtista(String artista) {
+        if (artista == null || artista.trim().isEmpty()) {
+            System.out.println("Artista inválido!");
+        } else {
+            this.artista = artista;
+        }
+    }
+
+    public int getDuracao() {
+        return duracao;
+    }
+
+    public void setDuracao(int duracao) {
+        if (duracao > 0) {
+            this.duracao = duracao;
+        } else {
+            System.out.println("Duração deve ser maior que zero!");
+        }
+    }
+
+    public String getGenero() {
+        return genero;
+    }
+
+    public void setGenero(String genero) {
+        if (genero == null || genero.trim().isEmpty()) {
+            System.out.println("Gênero inválido!");
+        } else {
+            this.genero = genero;
+        }
+    }
+
+    public void exibir() {
+        System.out.println(titulo + " - " + artista + " (" + duracao + "s) [" + genero + "]");
     }
 }

@@ -1,33 +1,64 @@
 import java.util.ArrayList;
 
 public class Playlist {
-    String nome;
-    ArrayList<Musica> musicas = new ArrayList<>();
-    void adicionarMusica(Musica musica) {
-        musicas.add(musica);
+
+    private String nome;
+    private ArrayList<Musica> musicas;
+
+    // Construtor
+    public Playlist(String nome) {
+        setNome(nome);
+        this.musicas = new ArrayList<>();
     }
-    void removerMusica(int indice) {
-        musicas.remove(indice);
+
+    // Getter e Setter
+    public String getNome() {
+        return nome;
     }
-    void listasMusicas() {
+
+    public void setNome(String nome) {
+        if (nome == null || nome.trim().isEmpty()) {
+            System.out.println("Nome da playlist inválido!");
+        } else {
+            this.nome = nome;
+        }
+    }
+
+    public ArrayList<Musica> getMusicas() {
+        return musicas;
+    }
+
+    // Métodos
+    public void adicionarMusica(Musica musica) {
+        if (musica != null) {
+            musicas.add(musica);
+        }
+    }
+
+    public void listarMusicas() {
+        if (musicas.isEmpty()) {
+            System.out.println("Playlist vazia!");
+            return;
+        }
+
         for (int i = 0; i < musicas.size(); i++) {
+            System.out.print(i + " - ");
             musicas.get(i).exibir();
         }
     }
-    int getDuracaoTotal() {
-        int duracaoTotal = 0;
-        for (int i = 0; i < musicas.size(); i++) {
-            duracaoTotal += musicas.get(i).duracaoSegundos;
+
+    public void buscarPorTitulo(String titulo) {
+        boolean encontrou = false;
+
+        for (Musica m : musicas) {
+            if (m.getTitulo().equalsIgnoreCase(titulo)) {
+                m.exibir();
+                encontrou = true;
+            }
         }
-        return  duracaoTotal;
-    }
-    String getDuracaoTotalFormatada() {
-        int duracaoTotal = this.getDuracaoTotal();
-        int min = duracaoTotal / 60;
-        int seg = duracaoTotal % 60;
-        return String.format("%d:%02d", min, seg);
-    }
-    int getQuantidadeDeMusicas() {
-        return musicas.size();
+
+        if (!encontrou) {
+            System.out.println("Música não encontrada!");
+        }
     }
 }

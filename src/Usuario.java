@@ -1,19 +1,55 @@
 import java.util.ArrayList;
 
 public class Usuario {
-    String nome;
-    ArrayList<Playlist> playlists = new ArrayList<>();
-    void criarPlaylist(String nome) {
-        Playlist playlist = new Playlist();
-        playlist.nome = (nome);
-        playlists.add(playlist);
+
+    private String nome;
+    private ArrayList<Playlist> playlists;
+
+    // Construtor
+    public Usuario(String nome) {
+        setNome(nome);
+        this.playlists = new ArrayList<>();
     }
-    Playlist getPlaylist(int indice) {
-        return playlists.get(indice);
+
+    // Getter e Setter
+    public String getNome() {
+        return nome;
     }
-    void listarPlaylists() {
-        for (int i = 0; i < playlists.size(); i++) {
-            System.out.println(i + 1 + ". " + playlists.get(i).nome);
+
+    public void setNome(String nome) {
+        if (nome == null || nome.trim().isEmpty()) {
+            System.out.println("Nome inválido!");
+        } else {
+            this.nome = nome;
         }
+    }
+
+    public ArrayList<Playlist> getPlaylists() {
+        return playlists;
+    }
+
+    // Métodos
+    public void criarPlaylist(String nome) {
+        Playlist nova = new Playlist(nome);
+        playlists.add(nova);
+        System.out.println("Playlist criada com sucesso!");
+    }
+
+    public void listarPlaylists() {
+        if (playlists.isEmpty()) {
+            System.out.println("Nenhuma playlist criada.");
+            return;
+        }
+
+        for (int i = 0; i < playlists.size(); i++) {
+            System.out.println(i + " - " + playlists.get(i).getNome());
+        }
+    }
+
+    public Playlist getPlaylist(int index) {
+        if (index >= 0 && index < playlists.size()) {
+            return playlists.get(index);
+        }
+        return null;
     }
 }
