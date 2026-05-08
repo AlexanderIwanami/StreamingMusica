@@ -1,81 +1,119 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class StreamingMusica {
 
     static Scanner scanner = new Scanner(System.in);
-    static Usuario usuario = new Usuario("Usuário");
+    static ArrayList<Usuario> usuarios = new ArrayList<>();
+    static Usuario usuarioLogado;
 
     public static void main(String[] args) {
+
+        seedUsuarios();
+        login();
 
         int opcao;
 
         do {
             menu();
-            opcao = lerOpcao();
-            processarOpcao(opcao);
+            opcao = lerInt();
+
+            switch (opcao) {
+                case 1 -> criarPlaylist();
+                case 2 -> adicionarMusica();
+                case 3 -> listarPlaylists();
+                case 4 -> reproduzirMusica();
+                case 5 -> estatisticas();
+                case 0 -> System.out.println("Saindo...");
+                default -> System.out.println("Opção inválida!");
+            }
+
         } while (opcao != 0);
-
-        System.out.println("\n🎵 Até logo! 🎵");
-        scanner.close();
     }
 
-    public static void menu() {
-        System.out.println("\n=== SISTEMA DE STREAMING ===");
-        System.out.println("1. Criar playlist");
-        System.out.println("2. Adicionar música");
-        System.out.println("3. Listar músicas");
-        System.out.println("4. Buscar música");
-        System.out.println("0. Sair");
-        System.out.print("Escolha: ");
-    }
-
-    public static int lerOpcao() {
+    // 🔹 evita erro de número inválido
+    public static int lerInt() {
         try {
             return Integer.parseInt(scanner.nextLine());
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
             return -1;
         }
     }
 
-    public static void processarOpcao(int opcao) {
-        switch (opcao) {
-            case 1:
-                criarPlaylist();
-                break;
-            case 2:
-                adicionarMusica();
-                break;
-            case 3:
-                listarMusicas();
-                break;
-            case 4:
-                buscarMusica();
-                break;
-            case 0:
-                break;
-            default:
-                System.out.println("Opção inválida!");
+    public static void seedUsuarios() {
+        usuarios.add(new UsuarioFree("Ana"));
+        usuarios.add(new UsuarioPremium("Carlos"));
+    }
+
+    public static void login() {
+        System.out.print("Digite seu nome: ");
+        String nome = scanner.nextLine();
+
+        for (Usuario u : usuarios) {
+            if (u.getNome().equalsIgnoreCase(nome)) {
+                usuarioLogado = u;
+                return;
+            }
         }
+
+        System.out.println("Novo usuário!");
+        System.out.println("1 - Free | 2 - Premium");
+        int tipo = lerInt();
+
+        if (tipo == 2) {
+            usuarioLogado = new UsuarioPremium(nome);
+        } else {
+            usuarioLogado = new UsuarioFree(nome);
+        }
+
+        usuarios.add(usuarioLogado);
+    }
+
+    public static void menu() {
+        System.out.println("\n1. Criar playlist");
+        System.out.println("2. Adicionar música");
+        System.out.println("3. Listar playlists");
+        System.out.println("4. Reproduzir música");
+        System.out.println("5. Estatísticas");
+        System.out.println("0. Sair");
+        System.out.print("Escolha: ");
     }
 
     public static void criarPlaylist() {
         System.out.print("Nome da playlist: ");
         String nome = scanner.nextLine();
-        usuario.criarPlaylist(nome);
+        usuarioLogado.criarPlaylist(nome);
+    }
+
+    public static void listarPlaylists() {
+        if (usuarioLogado.getPlaylists().isEmpty()) {
+            System.out.println("Nenhuma playlist.");
+            return;
+        }
+
+        for (int i = 0; i < usuarioLogado.getPlaylists().size(); i++) {
+            System.out.println(i + " - " + usuarioLogado.getPlaylists().get(i).getNome());
+        }
     }
 
     public static void adicionarMusica() {
-        usuario.listarPlaylists();
+
+        if (usuarioLogado.getPlaylists().isEmpty()) {
+            System.out.println("Crie uma playlist primeiro!");
+            return;
+        }
+
+        listarPlaylists();
 
         System.out.print("Escolha a playlist: ");
-        int index = lerOpcao();
+        int index = lerInt();
 
-        Playlist p = usuario.getPlaylist(index);
-
-        if (p == null) {
+        if (index < 0 || index >= usuarioLogado.getPlaylists().size()) {
             System.out.println("Playlist inválida!");
             return;
         }
+
+        Playlist p = usuarioLogado.getPlaylists().get(index);
 
         System.out.print("Título: ");
         String titulo = scanner.nextLine();
@@ -83,49 +121,65 @@ public class StreamingMusica {
         System.out.print("Artista: ");
         String artista = scanner.nextLine();
 
-        System.out.print("Duração (segundos): ");
-        int duracao = lerOpcao();
+        System.out.print("Duração: ");
+        int duracao = lerInt();
 
         System.out.print("Gênero: ");
         String genero = scanner.nextLine();
 
-        Musica m = new Musica(titulo, artista, duracao, genero);
-        p.adicionarMusica(m);
+        p.adicionarMusica(new Musica(titulo, artista, duracao, genero));
 
-        System.out.println("Música adicionada com sucesso!");
+        System.out.println("Música adicionada!");
     }
 
-    public static void listarMusicas() {
-        usuario.listarPlaylists();
+    public static void reproduzirMusica() {
 
-        System.out.print("Escolha a playlist: ");
-        int index = lerOpcao();
-
-        Playlist p = usuario.getPlaylist(index);
-
-        if (p != null) {
-            p.listarMusicas();
-        } else {
-            System.out.println("Playlist inválida!");
+        if (usuarioLogado.getPlaylists().isEmpty()) {
+            System.out.println("Nenhuma playlist!");
+            return;
         }
-    }
 
-    public static void buscarMusica() {
-        usuario.listarPlaylists();
+        listarPlaylists();
 
         System.out.print("Escolha a playlist: ");
-        int index = lerOpcao();
+        int p = lerInt();
 
-        Playlist p = usuario.getPlaylist(index);
-
-        if (p == null) {
+        if (p < 0 || p >= usuarioLogado.getPlaylists().size()) {
             System.out.println("Playlist inválida!");
             return;
         }
 
-        System.out.print("Digite o título: ");
-        String busca = scanner.nextLine();
+        Playlist playlist = usuarioLogado.getPlaylists().get(p);
 
-        p.buscarPorTitulo(busca);
+        if (playlist.getMusicas().isEmpty()) {
+            System.out.println("Playlist sem músicas!");
+            return;
+        }
+
+        playlist.listarMusicas();
+
+        System.out.print("Escolha a música: ");
+        int m = lerInt();
+
+        if (m < 0 || m >= playlist.getMusicas().size()) {
+            System.out.println("Música inválida!");
+            return;
+        }
+
+        usuarioLogado.reproduzirMusica(playlist.getMusicas().get(m));
+    }
+
+    public static void estatisticas() {
+
+        int free = 0;
+        int premium = 0;
+
+        for (Usuario u : usuarios) {
+            if (u instanceof UsuarioFree) free++;
+            if (u instanceof UsuarioPremium) premium++;
+        }
+
+        System.out.println("Free: " + free);
+        System.out.println("Premium: " + premium);
     }
 }
